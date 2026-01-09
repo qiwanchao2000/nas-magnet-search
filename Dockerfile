@@ -1,24 +1,30 @@
 FROM python:3.9-slim
 
-# 安装 Tor 和必要的网络工具
+# 安装 Tor 和常用工具
 RUN apt-get update && \
-    apt-get install -y tor curl && \
+    apt-get install -y tor curl netcat-openbsd && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 安装 Python 依赖
-COPY requirements.txt .
+# 1. 安装依赖
+COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制所有文件
-COPY . .
+# 2. [核心修复] 明确复制文件结构
+# 确保 app.py 直接位于 /app/app.py
+COPY src/app.py /app/app.py
+# 确保 templates 文件夹位于 /app/templates
+COPY src/templates /app/templates
+# 复制配置文件
+COPY torrc /app/torrc
+COPY start.sh /app/start.sh
 
-# 赋予脚本权限
-RUN chmod +x start.sh
-RUN mkdir -p /var/lib/tor && chown -R debian-tor:debian-tor /var/lib/tor
+# 3. 赋予脚本执行权限
+RUN chmod +x /app/start.sh
 
+# 暴露端口
 EXPOSE 5000
 
-# 使用脚本启动
-CMD ["./start.sh"]
+# 启动
+CMD ["/app/start.sh"]
