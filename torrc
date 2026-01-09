@@ -3,17 +3,13 @@ SocksPort 0.0.0.0:9050
 Log notice stdout
 DataDirectory /var/lib/tor
 
-# === 开启网桥模式 ===
+# === 开启网桥 ===
 UseBridges 1
 
-# === 1. 配置 Meek-Azure (首选主力) ===
-# 告诉 Tor 使用 obfs4proxy 来处理 meek 流量
+# === 配置 Meek-Azure (唯一的主力) ===
+# 使用 apt 安装的 obfs4proxy
 ClientTransportPlugin meek_lite exec /usr/bin/obfs4proxy
 
-# Meek-Azure 网桥地址 (这是 Tor Project 官方维护的微软伪装节点)
+# 微软云伪装网桥 (Meek-Azure)
+# 这是一个极其坚挺的网桥，流量看起来像是在访问 ajax.aspnetcdn.com
 Bridge meek_lite 0.0.2.0:3 97700DFE9F483596DDA6264C4D7DF7641E1E39CE url=https://meek.azureedge.net/ front=ajax.aspnetcdn.com
-
-# === 2. 配置 Snowflake (作为备用) ===
-ClientTransportPlugin snowflake exec /usr/bin/snowflake-client -url https://snowflake-broker.azureedge.net/ -front ajax.aspnetcdn.com -ice stun:stun.l.google.com:19302,stun:stun.voip.blackberry.com:3478,stun:stun.altar.com.pl:3478,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.com:3478,stun:stun.sonetel.net:3478,stun:stun.stunprotocol.org:3478,stun:stun.ulive.net:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478
-
-Bridge snowflake 192.0.2.3:1 2B280B23E1107BB62ABFC40DDCC8824814F80A72
