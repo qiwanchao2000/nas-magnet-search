@@ -1,8 +1,8 @@
 FROM python:3.9-slim
 
-# 安装 Tor 和常用工具
+# === [关键修改] 安装 obfs4proxy (用于网桥混淆) ===
 RUN apt-get update && \
-    apt-get install -y tor curl netcat-openbsd && \
+    apt-get install -y tor curl netcat-openbsd obfs4proxy && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -11,20 +11,15 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 2. [核心修复] 明确复制文件结构
-# 确保 app.py 直接位于 /app/app.py
+# 2. 复制文件
 COPY src/app.py /app/app.py
-# 确保 templates 文件夹位于 /app/templates
 COPY src/templates /app/templates
-# 复制配置文件
 COPY torrc /app/torrc
 COPY start.sh /app/start.sh
 
-# 3. 赋予脚本执行权限
+# 3. 权限
 RUN chmod +x /app/start.sh
 
-# 暴露端口
 EXPOSE 5000
 
-# 启动
 CMD ["/app/start.sh"]
