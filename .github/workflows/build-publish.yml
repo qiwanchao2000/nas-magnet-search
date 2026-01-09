@@ -4,6 +4,12 @@ on:
   push:
     branches: [ "main" ]
 
+# === [关键修复] 授予 GITHUB_TOKEN 写权限 ===
+permissions:
+  contents: read
+  packages: write
+# =========================================
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -11,14 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # 登录 DockerHub
+      # 1. 登录 Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 登录 GitHub Container Registry (备用)
+      # 2. 登录 GitHub Container Registry
       - name: Login to GHCR
         uses: docker/login-action@v2
         with:
@@ -26,13 +32,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 构建并推送
+      # 3. 设置小写镜像名 (GitHub要求)
+      - name: Lowercase Repo Name
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
+      # 4. 构建并推送 (推送到双平台)
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          # 同时推送到两个仓库
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/nas-magnet-search:latest
-            ghcr.io/${{ github.repository_owner }}/nas-magnet-search:latest
+            ghcr.io/${{ env.REPO_NAME }}:latest
