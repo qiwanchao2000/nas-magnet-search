@@ -1,4 +1,4 @@
-name: Build Tor-NAS Image
+name: Build WARP-App
 
 on:
   push:
@@ -26,4 +26,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/nas-magnet-tor:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/nas-magnet-search:latest
