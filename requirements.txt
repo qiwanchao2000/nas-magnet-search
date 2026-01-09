@@ -1,4 +1,6 @@
 flask
-requests[socks]
+requests
+pysocks
 beautifulsoup4
+cloudscraper
 gunicorn
