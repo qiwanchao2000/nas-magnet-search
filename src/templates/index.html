@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>磁力魔 - NAS 私有版</title>
+    <style>
+        :root { --bg:#121212; --card:#1e1e1e; --input:#2b2b2b; --blue:#0d6efd; --text:#e0e0e0; --sub:#a0a0a0; --green:#2ea043; --red:#ff6b6b; }
+        body { background-color:var(--bg); color:var(--text); font-family:sans-serif; margin:0; padding:20px; }
+        .container { max-width:900px; margin:0 auto; }
+        .header { display:flex; align-items:center; gap:10px; margin-bottom:30px; font-size:24px; font-weight:bold; }
+        .search-card { background-color:var(--card); padding:25px; border-radius:12px; margin-bottom:30px; box-shadow:0 4px 10px rgba(0,0,0,0.5); }
+        input { width:100%; background:var(--input); border:1px solid #333; color:#fff; padding:15px; border-radius:8px; font-size:16px; box-sizing:border-box; margin-bottom:15px; outline:none; }
+        input:focus { border-color:var(--blue); }
+        button { width:100%; background:var(--blue); color:#fff; border:none; padding:15px; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+        button:hover { background:#0b5ed7; }
+        
+        .result-item { background:var(--card); padding:20px; margin-bottom:15px; border-radius:10px; border-left:5px solid var(--blue); position:relative; }
+        .result-title { color:#58a6ff; font-size:18px; font-weight:bold; text-decoration:none; display:block; margin-bottom:10px; word-break:break-all; }
+        .meta { display:flex; gap:20px; color:var(--sub); font-size:14px; flex-wrap:wrap; align-items:center; }
+        .badge { padding:2px 6px; border-radius:4px; font-size:12px; font-weight:bold; }
+        .badge-solid { background:#ff9f43; color:#fff; }
+        .badge-bit { background:#ee5253; color:#fff; }
+        
+        .magnet-btn { background:rgba(46,160,67,0.15); color:var(--green); border:1px solid rgba(46,160,67,0.3); padding:8px 15px; border-radius:6px; text-decoration:none; cursor:pointer; margin-top:10px; display:inline-block; font-size:14px; }
+        .magnet-btn:hover { background:rgba(46,160,67,0.25); }
+        
+        .loading { display:none; text-align:center; color:var(--sub); margin-top:10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">🔍 磁力魔 (NAS Private)</div>
+    <div class="search-card">
+        <form method="POST" onsubmit="document.querySelector('.loading').style.display='block'">
+            <input type="text" name="keyword" placeholder="搜索电影、剧集、软件..." value="{{ keyword }}" required>
+            <button type="submit">立即搜索</button>
+            <div class="loading">正在全网聚合搜索...</div>
+        </form>
+    </div>
+    {% if error %} <div style="color:var(--red);text-align:center;">{{ error }}</div> {% endif %}
+    {% for item in results %}
+    <div class="result-item">
+        <a href="{{ item.magnet }}" class="result-title">
+            <span class="badge {{ 'badge-solid' if item.engine=='Solid' else 'badge-bit' }}">{{ item.engine }}</span>
+            {{ item.name }}
+        </a>
+        <div class="meta">
+            <span>📦 {{ item.size }}</span>
+            <span>📅 {{ item.date }}</span>
+            <span style="color:#58a6ff">⬆ {{ item.seeders }}</span>
+            <span style="color:#ff6b6b">⬇ {{ item.leechers }}</span>
+        </div>
+        <div class="magnet-btn" onclick="copy('{{ item.magnet }}', this)">🧲 复制链接</div>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    function copy(txt, el) {
+        navigator.clipboard.writeText(txt);
+        let old = el.innerText; el.innerText = "✅ 已复制";
+        setTimeout(() => el.innerText = old, 2000);
+    }
+</script>
+</body>
+</html>
