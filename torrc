@@ -3,15 +3,12 @@ SocksPort 0.0.0.0:9050
 Log notice stdout
 DataDirectory /var/lib/tor
 
-# === 开启网桥模式 (Bypass GFW) ===
+# === 开启网桥 ===
 UseBridges 1
-# 告诉 Tor 使用 obfs4 混淆协议
-ClientTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 
-# === 内置网桥列表 (如果是死链接，Tor 会自动尝试下一个) ===
-# 这里的网桥是 Tor 官方内置的公共网桥
-Bridge obfs4 192.95.36.142:443 CDF2E852BF539B82BD10E27E9115A31734E378C2 cert=qUVQ0/DQpIDj9SPHsYkWBOZK+RDKM6xmZ34S7s2iCzY1YGX4z7g+fWETBS43K0e+ZypyNw iat-mode=0
-Bridge obfs4 193.11.166.194:27015 2D8232990747F29837973775831206880D3D332F cert=4TLQPJrTSaDffMK6xiaJThxwJR0NMtBSLZnKFgl97uLjTw/CCdxwirbb86dfGcGHGAdQLQ iat-mode=0
-Bridge obfs4 37.218.245.69:38224 D9A82D2F9C2F65A18407B1D2B764F130847F8B5D cert=bjRaMrr1BRiAW8IE9U5z27fQaYgOhX1UCmOpg2pf9kHU64rVQDAtkG04Y5TndJ75xJuYjg iat-mode=0
-Bridge obfs4 85.31.186.98:443 011F2599C0E9B27EE74B353155E244813763C3E5 cert=ayq0XzCwhpdb12/CS3Z78GLr53LhLh6W7+3YAgulK743fFh1qL5Yg5Y+V+8h07/J/60G4w iat-mode=0
-Bridge obfs4 193.11.166.194:27020 86AC7B8D430DB413A608F90F44740C392E39064D cert=0lD+C86/Yy7y9hX2eX1aF3Y7Q1F9Z3z7C5W2Q4X1V3a5S2D4F6G8H0J2K4L6M8N0P2R4T iat-mode=0
+# === 配置 Snowflake ===
+# 告诉 Tor 如何启动 snowflake-client
+ClientTransportPlugin snowflake exec /usr/bin/snowflake-client -url https://snowflake-broker.torproject.net.global.prod.fastly.net/ -front cdn.sstatic.net -ice stun:stun.l.google.com:19302,stun:stun.voip.blackberry.com:3478,stun:stun.altar.com.pl:3478,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.com:3478,stun:stun.sonetel.net:3478,stun:stun.stunprotocol.org:3478,stun:stun.ulive.net:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478
+
+# 这是一个内置的 Snowflake 桥接地址 (固定写法)
+Bridge snowflake 192.0.2.3:1 2B280B23E1107BB62ABFC40DDCC8824814F80A72
